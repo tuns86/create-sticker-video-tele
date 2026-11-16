@@ -1,0 +1,7 @@
+{
+  "commands": [
+    "C:/Users/Tuan/.cargo/bin/cargo.exe check -q",
+    "C:/Users/Tuan/.cargo/bin/cargo.exe test -q"
+  ],
+  "timeout": 300
+}

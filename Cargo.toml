@@ -1,0 +1,10 @@
+[package]
+name = "create-sticker-video-tele"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+eframe = "0.37.0"
+rfd = "0.18.0"
+serde_json = "1.0.154"
