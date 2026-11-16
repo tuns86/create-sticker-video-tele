@@ -47,7 +47,7 @@ fn main() -> Result<()> {
             .with_inner_size([1280.0, 820.0])
             .with_min_inner_size([900.0, 600.0])
             .with_drag_and_drop(true)
-            .with_title("Tạo video sticker Telegram"),
+            .with_title("Telegram Video Sticker Maker"),
         ..Default::default()
     };
     eframe::run_native(

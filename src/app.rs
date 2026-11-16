@@ -167,7 +167,7 @@ pub struct StickerApp {
 
     /// Cho ô cắt vượt ra ngoài video (phần thừa là nền).
     allow_outside: bool,
-    /// Màu nền gần nhất, giữ lại khi bật/tắt "Trong suốt".
+    /// Màu nền gần nhất, giữ lại khi bật/tắt "Transparent".
     last_bg_color: [u8; 3],
 
     texture: Option<TextureHandle>,
@@ -548,7 +548,7 @@ impl StickerApp {
 
     fn top_bar(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            if ui.button("📂 Mở video…").clicked()
+            if ui.button("📂 Open video…").clicked()
                 && let Some(p) = rfd::FileDialog::new()
                     .add_filter(
                         "Video",
@@ -556,7 +556,7 @@ impl StickerApp {
                             "mp4", "mov", "mkv", "webm", "avi", "gif", "m4v", "flv", "wmv",
                         ],
                     )
-                    .add_filter("Tất cả", &["*"])
+                    .add_filter("All files", &["*"])
                     .pick_file()
             {
                 self.open(&p);
@@ -575,19 +575,19 @@ impl StickerApp {
                         i.fps,
                         i.codec,
                         if i.has_audio {
-                            "  •  có audio (sẽ bỏ)"
+                            "  •  has audio (will be dropped)"
                         } else {
                             ""
                         },
                         if i.has_alpha() {
-                            "  •  trong suốt"
+                            "  •  transparent"
                         } else {
                             ""
                         },
                     ));
                 }
                 None => {
-                    ui.label("Chưa mở video. Bấm \"Mở video\" hoặc kéo thả file vào cửa sổ.");
+                    ui.label("No video opened. Click \"Open video\" or drag & drop a file onto the window.");
                 }
             }
         });
@@ -595,7 +595,7 @@ impl StickerApp {
 
     fn crop_view(&mut self, ui: &mut egui::Ui) {
         let Some(info) = self.info.clone() else {
-            ui.centered_and_justified(|ui| ui.heading("Kéo thả video vào đây"));
+            ui.centered_and_justified(|ui| ui.heading("Drop a video here"));
             return;
         };
         let avail = ui.available_rect_before_wrap();
@@ -810,7 +810,7 @@ impl StickerApp {
             painter.text(
                 img_rect.right_bottom() - Vec2::splat(8.0),
                 Align2::RIGHT_BOTTOM,
-                "đang tải frame…",
+                "loading frame…",
                 FontId::proportional(12.0),
                 Color32::LIGHT_GRAY,
             );
@@ -828,14 +828,14 @@ impl StickerApp {
         // Hàng điều khiển
         ui.horizontal_wrapped(|ui| {
             let orig_label = if self.original.is_some() {
-                "⏸ Dừng video gốc"
+                "⏸ Stop original"
             } else {
-                "▶ Phát video gốc"
+                "▶ Play original"
             };
             if ui
                 .button(orig_label)
                 .on_hover_text(
-                    "Phát toàn bộ video gốc từ vị trí con trỏ đỏ, tốc độ 1x (phím Space)",
+                    "Play the whole source video from the red playhead at 1x (Space key)",
                 )
                 .clicked()
             {
@@ -843,29 +843,29 @@ impl StickerApp {
                 self.toggle_original(&ctx);
             }
             let play_label = if self.playing.is_some() {
-                "⏸ Dừng"
+                "⏸ Stop"
             } else if self.play_pending {
-                "⏳ Đang tải…"
+                "⏳ Loading…"
             } else {
-                "▶ Phát vùng chọn"
+                "▶ Play selection"
             };
             if ui
                 .button(play_label)
-                .on_hover_text("Phát lặp vùng chọn đúng FPS và tốc độ sẽ xuất")
+                .on_hover_text("Loop the selection at the export FPS and speed")
                 .clicked()
             {
                 let ctx = ui.ctx().clone();
                 self.toggle_play(&ctx);
             }
-            if ui.button("⏮").on_hover_text("Lùi 1 frame").clicked() {
+            if ui.button("⏮").on_hover_text("Back 1 frame").clicked() {
                 self.original = None;
                 self.playhead = (self.playhead - step).max(0.0);
             }
-            if ui.button("⏭").on_hover_text("Tiến 1 frame").clicked() {
+            if ui.button("⏭").on_hover_text("Forward 1 frame").clicked() {
                 self.original = None;
                 self.playhead = (self.playhead + step).min(dur);
             }
-            ui.label("Vị trí:");
+            ui.label("Position:");
             ui.add(
                 egui::DragValue::new(&mut self.playhead)
                     .range(0.0..=dur)
@@ -875,8 +875,8 @@ impl StickerApp {
             );
             ui.separator();
             if ui
-                .button("[ Đặt điểm đầu")
-                .on_hover_text("Đặt điểm đầu vùng chọn tại vị trí hiện tại")
+                .button("[ Set start")
+                .on_hover_text("Set selection start at the playhead")
                 .clicked()
             {
                 let len = self.selection.len().min(budget);
@@ -884,8 +884,8 @@ impl StickerApp {
                 self.selection.end = (self.selection.start + len.max(MIN_SEG)).min(dur);
             }
             if ui
-                .button("Đặt điểm cuối ]")
-                .on_hover_text("Đặt điểm cuối vùng chọn tại vị trí hiện tại")
+                .button("Set end ]")
+                .on_hover_text("Set selection end at the playhead")
                 .clicked()
             {
                 let end = self.playhead.max(MIN_SEG);
@@ -898,7 +898,7 @@ impl StickerApp {
                 }
             }
             ui.separator();
-            ui.label("Từ");
+            ui.label("From");
             let mut s = self.selection.start;
             let mut e = self.selection.end;
             ui.add(
@@ -908,7 +908,7 @@ impl StickerApp {
                     .fixed_decimals(3)
                     .suffix(" s"),
             );
-            ui.label("đến");
+            ui.label("to");
             ui.add(
                 egui::DragValue::new(&mut e)
                     .range(0.0..=dur)
@@ -926,11 +926,11 @@ impl StickerApp {
                 + self.selection.len()
                 <= MAX_DURATION * self.params.as_ref().map_or(1.0, |p| p.speed) + 1e-6;
             if ui
-                .add_enabled(can_add, egui::Button::new("+ Thêm vào danh sách ghép"))
+                .add_enabled(can_add, egui::Button::new("+ Add to join list"))
                 .on_hover_text(
-                    "Lưu vùng chọn thành một đoạn. Các đoạn sẽ được ghép nối theo thứ tự.",
+                    "Save the selection as a segment. Segments are concatenated in order.",
                 )
-                .on_disabled_hover_text("Tổng thời lượng sẽ vượt 3s")
+                .on_disabled_hover_text("Total duration would exceed 3s")
                 .clicked()
             {
                 self.segments.push(self.selection);
@@ -1074,27 +1074,27 @@ impl StickerApp {
         // Danh sách đoạn ghép
         ui.horizontal_wrapped(|ui| {
             if self.segments.is_empty() {
-                ui.weak("Danh sách ghép trống → sẽ xuất vùng chọn hiện tại. Bấm \"Thêm vào danh sách ghép\" để nối nhiều đoạn.");
+                ui.weak("Join list is empty → the current selection will be exported. Click \"Add to join list\" to concatenate several segments.");
                 return;
             }
-            ui.label("Ghép:");
+            ui.label("Join:");
             let mut remove = None;
             let mut swap = None;
             let n = self.segments.len();
             for (i, s) in self.segments.iter().enumerate() {
                 ui.group(|ui| {
                     ui.colored_label(SEG_COLORS[i % SEG_COLORS.len()], format!("#{}", i + 1));
-                    if ui.link(format!("{:.2}–{:.2}s ({:.2}s)", s.start, s.end, s.len())).on_hover_text("Chọn lại đoạn này").clicked() {
+                    if ui.link(format!("{:.2}–{:.2}s ({:.2}s)", s.start, s.end, s.len())).on_hover_text("Select this segment again").clicked() {
                         self.selection = *s;
                         self.playhead = s.start;
                     }
-                    if i > 0 && ui.small_button("◀").on_hover_text("Đưa lên trước").clicked() {
+                    if i > 0 && ui.small_button("◀").on_hover_text("Move earlier").clicked() {
                         swap = Some((i, i - 1));
                     }
-                    if i + 1 < n && ui.small_button("▶").on_hover_text("Đưa ra sau").clicked() {
+                    if i + 1 < n && ui.small_button("▶").on_hover_text("Move later").clicked() {
                         swap = Some((i, i + 1));
                     }
-                    if ui.small_button("✕").on_hover_text("Xoá đoạn").clicked() {
+                    if ui.small_button("✕").on_hover_text("Remove segment").clicked() {
                         remove = Some(i);
                     }
                 });
@@ -1105,7 +1105,7 @@ impl StickerApp {
             if let Some(i) = remove {
                 self.segments.remove(i);
             }
-            if ui.button("Xoá hết").clicked() {
+            if ui.button("Clear all").clicked() {
                 self.segments.clear();
             }
         });
@@ -1114,7 +1114,7 @@ impl StickerApp {
     fn side_panel(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         let Some(info) = self.info.clone() else {
             ui.heading("Video sticker Telegram");
-            ui.label("Yêu cầu đầu ra:\n• WEBM / VP9, không audio\n• 1:1, tối đa 512px (sticker: 512, emoji: 100)\n• ≤ 3 giây, ≤ 30 FPS\n• ≤ 256 KB");
+            ui.label("Output requirements:\n• WEBM / VP9, no audio\n• 1:1, max 512px (sticker: 512, emoji: 100)\n• ≤ 3 seconds, ≤ 30 FPS\n• ≤ 256 KB");
             return;
         };
         let exporting = self.export.is_some();
@@ -1129,11 +1129,11 @@ impl StickerApp {
 
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.add_enabled_ui(!exporting, |ui| {
-                ui.heading("Vùng cắt (1:1)");
+                ui.heading("Crop (1:1)");
                 let (w, h) = (info.width, info.height);
                 if ui
-                    .checkbox(&mut self.allow_outside, "Mở rộng ra ngoài video (thêm nền)")
-                    .on_hover_text("Cho ô vuông vượt ra ngoài khung video; phần thừa được tô màu nền")
+                    .checkbox(&mut self.allow_outside, "Extend beyond video (add background)")
+                    .on_hover_text("Let the square go past the video frame; the extra area is filled with the background")
                     .changed()
                     && !self.allow_outside
                 {
@@ -1150,7 +1150,7 @@ impl StickerApp {
                     ui.label("Y");
                     ui.add(egui::DragValue::new(&mut c.y).range(by0..=by1 - 1));
                     ui.end_row();
-                    ui.label("Cạnh");
+                    ui.label("Size");
                     ui.add(
                         egui::DragValue::new(&mut c.size)
                             .range(1..=maxs)
@@ -1163,17 +1163,17 @@ impl StickerApp {
                 }
                 ui.horizontal_wrapped(|ui| {
                     if ui
-                        .button("Lấy trọn video")
-                        .on_hover_text("Ô vuông cạnh dài nhất, chứa toàn bộ video; phần thừa là nền")
+                        .button("Fit whole video")
+                        .on_hover_text("Square as large as the long side, containing the whole video; the rest is background")
                         .clicked()
                     {
                         self.allow_outside = true;
                         params.crop = CropSquare::fit_all(w, h);
                     }
-                    if ui.button("Giữa, tối đa").clicked() {
+                    if ui.button("Max, centered").clicked() {
                         params.crop = CropSquare::centered(w, h);
                     }
-                    if ui.button("Căn giữa").clicked() {
+                    if ui.button("Center").clicked() {
                         let s = params.crop.size as i32;
                         params.crop = CropSquare {
                             x: (w as i32 - s) / 2,
@@ -1185,7 +1185,7 @@ impl StickerApp {
                 });
                 if self.allow_outside {
                     ui.horizontal(|ui| {
-                        ui.label("Màu nền:");
+                        ui.label("Background:");
                         let mut transparent = params.background == Background::Transparent;
                         let mut rgb = match params.background {
                             Background::Color(c) => c,
@@ -1194,7 +1194,7 @@ impl StickerApp {
                         ui.add_enabled_ui(!transparent, |ui| {
                             ui.color_edit_button_srgb(&mut rgb);
                         });
-                        ui.checkbox(&mut transparent, "Trong suốt");
+                        ui.checkbox(&mut transparent, "Transparent");
                         self.last_bg_color = rgb;
                         params.background = if transparent {
                             Background::Transparent
@@ -1203,19 +1203,19 @@ impl StickerApp {
                         };
                     });
                 }
-                ui.weak("Kéo ô vuông để di chuyển, kéo góc để đổi cỡ, lăn chuột để phóng/thu.");
+                ui.weak("Drag the square to move, drag a corner to resize, scroll to zoom.");
                 if params.crop.size < params.out_size {
                     ui.colored_label(
                         Color32::YELLOW,
                         format!(
-                            "Vùng cắt {}px nhỏ hơn đầu ra {}px → sẽ bị phóng to, có thể mờ.",
+                            "Crop {}px is smaller than output {}px → it will be upscaled and may look blurry.",
                             params.crop.size, params.out_size
                         ),
                     );
                 }
 
                 ui.separator();
-                ui.heading("Kích thước đầu ra");
+                ui.heading("Output size");
                 ui.horizontal(|ui| {
                     if ui
                         .radio_value(&mut self.size_mode, SizeMode::Sticker, "Sticker 512")
@@ -1229,27 +1229,27 @@ impl StickerApp {
                     {
                         params.out_size = EMOJI_SIDE;
                     }
-                    ui.radio_value(&mut self.size_mode, SizeMode::Custom, "Tuỳ chỉnh");
+                    ui.radio_value(&mut self.size_mode, SizeMode::Custom, "Custom");
                 });
                 if self.size_mode == SizeMode::Custom {
                     ui.add(egui::Slider::new(&mut params.out_size, 16..=MAX_SIDE).suffix(" px"));
                     if params.out_size != MAX_SIDE {
                         ui.colored_label(
                             Color32::YELLOW,
-                            "Telegram yêu cầu sticker có cạnh 512px (emoji 100px).",
+                            "Telegram requires stickers to be 512px (emoji 100px).",
                         );
                     }
                 }
                 ui.label(format!("→ {}×{} px", params.out_size, params.out_size));
 
                 ui.separator();
-                ui.heading("Thời lượng");
+                ui.heading("Duration");
                 ui.horizontal(|ui| {
                     ui.label("FPS");
                     ui.add(egui::Slider::new(&mut params.fps, 1..=MAX_FPS));
                 });
                 ui.horizontal(|ui| {
-                    ui.label("Tốc độ");
+                    ui.label("Speed");
                     ui.add(
                         egui::Slider::new(&mut params.speed, 0.25..=4.0)
                             .logarithmic(true)
@@ -1257,34 +1257,34 @@ impl StickerApp {
                             .suffix("x"),
                     );
                 });
-                ui.weak("Vùng chọn tối đa 3s trên video gốc. Tốc độ > 1x làm đoạn đó chạy nhanh hơn (video ra ngắn hơn).");
-                if ui.button("Tốc độ gốc 1x").clicked() {
+                ui.weak("Selection is capped at 3s of source video. Speed > 1x plays it faster (shorter output).");
+                if ui.button("Reset speed 1x").clicked() {
                     params.speed = 1.0;
                 }
                 let out = seg_source / params.speed;
                 let ok = out <= MAX_DURATION + 1e-6;
-                ui.label(format!("Đoạn gốc: {seg_source:.3}s"));
+                ui.label(format!("Source: {seg_source:.3}s"));
                 ui.colored_label(
                     if ok {
                         Color32::LIGHT_GREEN
                     } else {
                         Color32::from_rgb(255, 90, 90)
                     },
-                    format!("Đầu ra: {out:.3}s / tối đa {MAX_DURATION:.0}s"),
+                    format!("Output: {out:.3}s / max {MAX_DURATION:.0}s"),
                 );
 
                 ui.separator();
-                ui.heading("Chất lượng");
+                ui.heading("Quality");
                 ui.horizontal(|ui| {
                     ui.label("CRF");
                     ui.add(egui::Slider::new(&mut params.crf, 4..=50))
                         .on_hover_text(
-                            "Nhỏ = đẹp hơn, file lớn hơn. App tự giảm bitrate nếu vượt 256 KB.",
+                            "Lower = better quality, bigger file. Bitrate is lowered automatically if over 256 KB.",
                         );
                 });
 
                 ui.separator();
-                ui.heading("File đầu ra");
+                ui.heading("Output file");
                 ui.horizontal(|ui| {
                     ui.label(
                         params
@@ -1294,7 +1294,7 @@ impl StickerApp {
                             .unwrap_or_default(),
                     )
                     .on_hover_text(params.output.display().to_string());
-                    if ui.button("Chọn…").clicked() {
+                    if ui.button("Browse…").clicked() {
                         let mut d = rfd::FileDialog::new().add_filter("WEBM", &["webm"]);
                         if let Some(dir) = params.output.parent() {
                             d = d.set_directory(dir);
@@ -1323,22 +1323,22 @@ impl StickerApp {
                         egui::ProgressBar::new(pr.fraction)
                             .show_percentage()
                             .text(format!(
-                                "Lần {} • {:.0}%  ({:.0}s)",
+                                "Attempt {} • {:.0}%  ({:.0}s)",
                                 pr.attempt,
                                 pr.fraction * 100.0,
                                 job.started.elapsed().as_secs_f32()
                             )),
                     );
                     if pr.attempt > 1 {
-                        ui.weak("File vượt 256 KB → đang nén lại với bitrate thấp hơn.");
+                        ui.weak("File over 256 KB → re-encoding at a lower bitrate.");
                     }
-                    if ui.button("Huỷ").clicked() {
+                    if ui.button("Cancel").clicked() {
                         job.cancel.store(true, Ordering::Relaxed);
                     }
                 }
                 None => {
                     let valid = matches!(validation, Some(Ok(())));
-                    let btn = egui::Button::new(egui::RichText::new("💾  Xuất sticker").size(18.0))
+                    let btn = egui::Button::new(egui::RichText::new("💾  Export sticker").size(18.0))
                         .min_size(Vec2::new(ui.available_width(), 36.0));
                     if ui.add_enabled(valid, btn).clicked() {
                         want_export = true;
@@ -1351,9 +1351,9 @@ impl StickerApp {
 
             if let Some(r) = &self.result {
                 ui.separator();
-                ui.colored_label(Color32::LIGHT_GREEN, "✔ Đã xuất");
+                ui.colored_label(Color32::LIGHT_GREEN, "✔ Exported");
                 ui.label(format!(
-                    "{}×{} • {:.3}s • {:.1} KB\n{} kbps, CRF {}, {} lần encode",
+                    "{}×{} • {:.3}s • {:.1} KB\n{} kbps, CRF {}, {} encode pass(es)",
                     r.width,
                     r.height,
                     r.duration,
@@ -1364,7 +1364,7 @@ impl StickerApp {
                 ));
                 ui.label(r.output.display().to_string());
                 ui.horizontal(|ui| {
-                    if ui.button("Mở thư mục").clicked() {
+                    if ui.button("Open folder").clicked() {
                         open_in_explorer(&r.output);
                     }
                 });
@@ -1386,7 +1386,7 @@ impl StickerApp {
                     Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)),
                     Color32::WHITE,
                 );
-                ui.weak("Xem trước kết quả (lặp lại)");
+                ui.weak("Result preview (looping)");
                 ctx.request_repaint();
             }
         });

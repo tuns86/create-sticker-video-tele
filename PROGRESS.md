@@ -12,5 +12,5 @@ Verify: `cargo test` (needs ffmpeg/ffprobe on PATH).
 - [x] Preview frame grab — `extracts_preview_frame`
 - [x] Smooth selection playback (decode range once) — `extracts_range_for_smooth_playback`, `playback_index_follows_speed_and_loops`
 - [x] Original video playback (ffmpeg stream, Space, seek while playing) — `streams_original_video_until_end`, `stream_stops_cleanly_when_dropped_early`, `original_playback_keeps_source_fps_up_to_60`; manual: Space → playhead at 2.500s after 2.5s
-- [x] Logs / errors / CLI output / docs in English (GUI labels stay Vietnamese)
+- [x] Logs / errors / CLI output / GUI labels / docs in English
 - [x] egui GUI + CLI — manual: GUI screenshots; CLI demo 512x512 3.000s 57.8 KB

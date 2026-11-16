@@ -72,43 +72,43 @@ cargo watch -x run
 
 ### 3.1 Open a video
 
-Click **Mở video…** (Open video) or drag & drop a file onto the window. The top bar shows resolution, duration, FPS, codec, and whether audio will be dropped.
+Click **📂 Open video…** or drag & drop a file onto the window. The top bar shows resolution, duration, FPS, codec, and whether audio will be dropped.
 
 ### 3.2 Watch the original video
 
-- **▶ Phát video gốc** (Play original) or **Space**: plays the whole source from the red playhead at 1× and source FPS (up to 60).
+- **▶ Play original** or **Space**: plays the whole source from the red playhead at 1× and source FPS (up to 60).
 - Click/drag on the timeline while playing to seek; playback continues from the new position.
 
 ### 3.3 Choose the time range (timeline)
 
 - Drag the **two blue edges** to set start/end; drag the middle to move the whole range; click the bar to move the red playhead.
-- **[ Đặt điểm đầu** / **Đặt điểm cuối ]** set start/end at the playhead. **⏮ ⏭** step one frame.
+- **[ Set start** / **Set end ]** set start/end at the playhead. **⏮ ⏭** step one frame.
 - The range is capped at **3 s of source video**.
-- **▶ Phát vùng chọn** (Play selection) loops the range exactly as it will be exported (output FPS and speed).
+- **▶ Play selection** loops the range exactly as it will be exported (output FPS and speed).
 
-**Concatenate several clips:** click **+ Thêm vào danh sách ghép** (Add to join list) to store the current range as a segment, then pick the next range. Segments are joined in order (reorder with ◀ ▶, remove with ✕). The total is still capped at 3 s. If the list is empty, the current range is exported.
+**Concatenate several clips:** click **+ Add to join list** to store the current range as a segment, then pick the next range. Segments are joined in order (reorder with ◀ ▶, remove with ✕, **Clear all** to reset). The total is still capped at 3 s. If the list is empty, the current range is exported.
 
 ### 3.4 Choose the crop area (on the video)
 
 - Drag the blue square to move it, drag a corner to resize, scroll the mouse wheel to zoom, or drag outside the square to draw a new one.
-- Or type **X / Y / Cạnh** (size) in the right panel. **Giữa, tối đa** = largest centered square; **Căn giữa** = center the current square.
+- Or type **X / Y / Size** in the right panel. **Max, centered** = largest centered square; **Center** = center the current square.
 
 **Extend beyond the video (e.g. keep a full 9:16 video):**
 
-- Tick **Mở rộng ra ngoài video (thêm nền)**, or click **Lấy trọn video** (Fit whole video) — the square becomes as large as the long side and the empty area is filled with background.
-- **Màu nền** (Background): black by default; pick any color, or tick **Trong suốt** (Transparent) to export with an alpha channel.
+- Tick **Extend beyond video (add background)**, or click **Fit whole video** — the square becomes as large as the long side and the empty area is filled with background.
+- **Background**: black by default; pick any color, or tick **Transparent** to export with an alpha channel.
 
 ### 3.5 Output settings
 
-- **Kích thước đầu ra** (Output size): **Sticker 512** (required for stickers), **Emoji 100**, or custom (≤ 512).
+- **Output size**: **Sticker 512** (required for stickers), **Emoji 100**, or **Custom** (≤ 512).
 - **FPS**: 1–30.
-- **Tốc độ** (Speed): > 1× plays the selected range faster (shorter output); < 1× slows it down (the range shrinks so the output stays ≤ 3 s). **Tốc độ gốc 1x** resets it.
+- **Speed**: > 1× plays the selected range faster (shorter output); < 1× slows it down (the range shrinks so the output stays ≤ 3 s). **Reset speed 1x** resets it.
 - **CRF**: lower = better quality / bigger file. The app lowers bitrate automatically if the file exceeds 256 KB.
-- **File đầu ra**: output path (default `<video name>_sticker.webm` next to the source).
+- **Output file**: output path (default `<video name>_sticker.webm` next to the source); **Browse…** to change it.
 
 ### 3.6 Export
 
-Click **Xuất sticker**. A progress bar is shown (with the attempt number if a re-encode is needed). When done, the panel shows size/duration/bitrate and loops a preview of the result; **Mở thư mục** opens the output folder.
+Click **💾 Export sticker**. A progress bar is shown (with the attempt number if a re-encode is needed; **Cancel** stops it). When done, the panel shows size/duration/bitrate and loops a preview of the result; **Open folder** opens the output folder.
 
 ### 3.7 Upload to Telegram
 
